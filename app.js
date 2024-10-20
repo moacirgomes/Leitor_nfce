@@ -1,23 +1,23 @@
 document.getElementById('scan-btn').addEventListener('click', () => {
-    const preview = document.getElementById('preview');
+    const videoContainer = document.querySelector('.video-container');
     const overlay = document.getElementById('scanner-overlay');
+    const invoiceDetails = document.getElementById('invoice-details');
 
-    // Remover a classe 'hidden' para exibir o vídeo e o quadrado
-    preview.classList.remove('hidden');
-    overlay.classList.remove('hidden');
+    // Mostrar o container do vídeo e esconder os detalhes da nota
+    videoContainer.classList.remove('hidden');
+    invoiceDetails.classList.add('hidden');
 
     // Iniciar a leitura do QR code usando QuaggaJS
     Quagga.init({
         inputStream: {
-            name: "Live",
             type: "LiveStream",
-            target: preview, // Vincular o vídeo da câmera ao elemento <video>
+            target: document.querySelector('#preview'),
             constraints: {
                 facingMode: "environment" // Usar a câmera traseira
             }
         },
         decoder: {
-            readers: ["qr_reader"] // Usar apenas o leitor de QR Code
+            readers: ["qr_reader"] // Foco apenas em QR Codes
         }
     }, (err) => {
         if (err) {
@@ -34,8 +34,11 @@ document.getElementById('scan-btn').addEventListener('click', () => {
         // Parar a leitura após detecção
         Quagga.stop();
 
-        // Remover o quadrado de leitura após o QR Code ser lido
-        overlay.classList.add('hidden');
+        // Esconder o container do vídeo
+        videoContainer.classList.add('hidden');
+
+        // Exibir os detalhes da nota
+        invoiceDetails.classList.remove('hidden');
 
         // Exemplo de objeto de dados extraído do QR code (substituir pela lógica real de parsing)
         const data = {
@@ -70,6 +73,4 @@ function showInvoiceDetails(data) {
         li.textContent = `${produto.descricao} - Quantidade: ${produto.quantidade} - Total: R$${produto.valor_total}`;
         productList.appendChild(li);
     });
-
-    document.getElementById('invoice-details').classList.remove('hidden');
 }
