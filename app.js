@@ -1,18 +1,23 @@
 document.getElementById('scan-btn').addEventListener('click', () => {
     const preview = document.getElementById('preview');
+    const overlay = document.getElementById('scanner-overlay');
+
+    // Remover a classe 'hidden' para exibir o vídeo e o quadrado
     preview.classList.remove('hidden');
+    overlay.classList.remove('hidden');
 
     // Iniciar a leitura do QR code usando QuaggaJS
     Quagga.init({
         inputStream: {
+            name: "Live",
             type: "LiveStream",
-            target: preview,
+            target: preview, // Vincular o vídeo da câmera ao elemento <video>
             constraints: {
-                facingMode: "environment"
+                facingMode: "environment" // Usar a câmera traseira
             }
         },
         decoder: {
-            readers: ["ean_reader", "code_128_reader", "qr_reader"]
+            readers: ["qr_reader"] // Usar apenas o leitor de QR Code
         }
     }, (err) => {
         if (err) {
@@ -28,6 +33,9 @@ document.getElementById('scan-btn').addEventListener('click', () => {
 
         // Parar a leitura após detecção
         Quagga.stop();
+
+        // Remover o quadrado de leitura após o QR Code ser lido
+        overlay.classList.add('hidden');
 
         // Exemplo de objeto de dados extraído do QR code (substituir pela lógica real de parsing)
         const data = {
